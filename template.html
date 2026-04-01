@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Insurance Assessment</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #f2f2f2;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+        width: 794px;
+        min-height: 1123px;
+        margin: 20px auto;
+        background: #ffffff;
+        padding: 60px 70px;
+        box-sizing: border-box;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .page + .page {
+        page-break-before: always;
+    }
+
+    .page-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        z-index: 1;
+    }
+
+.logo {
+    display: flex;
+    align-items: flex-start;
+}
+
+.logo img {
+    max-width: 160px;
+    height: auto;
+    
+    object-fit: contain;
+}
+
+    .company-info {
+        text-align: right;
+        font-size: 14px;
+        color: #777;
+        line-height: 1.5;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 30px;
+        font-weight: bold;
+        margin-top: 35px;
+        margin-bottom: 25px;
+        text-decoration: underline;
+    }
+
+    .meta {
+        text-align: right;
+        font-size: 15px;
+        margin-bottom: 35px;
+        line-height: 1.6;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: underline;
+        margin-top: 25px;
+        margin-bottom: 10px;
+    }
+
+    .section-content {
+        margin-left: 40px;
+    }
+
+    .row {
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+
+    .label {
+        font-weight: bold;
+        display: inline-block;
+        min-width: 200px;
+    }
+
+    .report {
+        margin-top: 15px;
+        margin-left: 40px; 
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .report p {
+        margin: 0 0 14px 0;
+    }
+
+    .footer {
+        margin-top: auto;
+        padding-top: 20px;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        font-size: 12px;
+        color: #b5b5b5;
+        line-height: 1.6;
+    }
+
+    .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    width: 70%;  
+    height: 70%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: none;
+    z-index: 0;
+}
+
+.watermark img {
+    max-width: 100%;
+    max-height: 100%;
+
+    object-fit: contain;
+    
+    opacity: 0.06;
+}
+
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    .page {
+        margin: 0 auto;
+        page-break-after: always;
+    }
+
+    .page:last-child {
+        page-break-after: auto;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+<div class="watermark">
+    <img src="https://mac-ops.co.nz/wp-content/uploads/2015/12/Mac-ops-clear-logo-new.jpg" alt="Mac Ops Logo">
+</div>
+
+    <div class="header">
+<div class="logo">
+    <img src="https://mac-ops.co.nz/wp-content/uploads/2015/12/Mac-ops-clear-logo-new.jpg" alt="Mac Ops Logo">
+</div>
+
+        <div class="company-info">
+            Level 1 / 45 Camp Street<br>
+            Queenstown 9300, New Zealand<br>
+            Phone: 03 428 2911<br>
+            E-mail: info@mac-ops.co.nz
+        </div>
+    </div>
+
+<div class="page-main">
+
+    <div class="title">Insurance Assessment</div>
+
+    <div class="meta">
+        <strong>Mac Ops Assessment: 0001</strong><br>
+        Tuesday, January 27 2026
+    </div>
+
+    <!-- CUSTOMER -->
+    <div class="section-title">Customer details:</div>
+    <div class="section-content">
+        <div class="row"><span class="label">Name:</span> John Doe</div>
+        <div class="row"><span class="label">Phone:</span> 021 021 021</div>
+        <div class="row"><span class="label">E-mail:</span> customer@email.com</div>
+        <div class="row"><span class="label">Insurance Claim Number:</span> C123456</div>
+    </div>
+
+    <!-- DEVICE -->
+    <div class="section-title">Device Specifications:</div>
+    <div class="section-content">
+        <div class="row"><span class="label">Device:</span> iPhone 15 Pro Max</div>
+        <div class="row"><span class="label">Replacement Value:</span> $2499</div>
+        <div class="row"><span class="label">Storage:</span> 256GB</div>
+        <div class="row"><span class="label">Serial Number:</span> FVF638273682</div>
+        <div class="row"><span class="label">IMEI:</span> 35000000000</div>
+    </div>
+
+    <!-- REPORT -->
+    <div class="section-title">Device Issue / Damage Report:</div>
+    <div class="report">
+        <p>The Apple iPhone 13 was presented to us after an impact damage incident with liquid damage.</p>
+        <p>The iPhone 13 is now unusable to the customer and won’t turn on.</p>
+        <p>Further inspection needed.</p>
+    </div>
+</div>
+
+    <div class="footer">
+        Mac Ops is a leading Sales, Service and Repair business for Apple, Windows, computers, phones, drones and electronic devices.
+        With 2 locations across Queenstown and Wanaka we support the Southern Lakes region for smart device requirements.
+        <br>
+<div class="logo" style="display:flex; justify-content:center; width:100%;">
+  <img
+    src="https://mac-ops.co.nz/wp-content/uploads/2026/03/Screenshot-2026-03-27-at-4.58.35-PM.png"
+    alt="Mac Ops Logo"
+    style="display:block; margin:0 auto;"
+  >
+</div>
+
+        www.mac-ops.co.nz
+    </div>
+
+</div>
+
+<!-- PAGE 2 -->
+<div class="page">
+
+<div class="watermark">
+    <img src="https://mac-ops.co.nz/wp-content/uploads/2015/12/Mac-ops-clear-logo-new.jpg" alt="Mac Ops Logo">
+</div>
+
+    <div class="header">
+<div class="logo">
+    <img src="https://mac-ops.co.nz/wp-content/uploads/2015/12/Mac-ops-clear-logo-new.jpg" alt="Mac Ops Logo">
+</div>
+
+        <div class="company-info">
+            Level 1 / 45 Camp Street<br>
+            Queenstown 9300, New Zealand<br>
+            Phone: 03 428 2911<br>
+            E-mail: info@mac-ops.co.nz
+        </div>
+    </div>
+
+<div class="page-main">
+
+    <!-- <div class="title">Insurance Assessment</div>
+
+    <div class="meta">
+        <strong>Mac Ops Assessment: 0001</strong><br>
+        Tuesday, January 27 2026
+    </div>
+     -->
+    <div class="section-title">Diagnosis of Issues / Damage:</div>
+    <div class="report">
+        <p>Inspection under magnification shows visible impact deformation near the bottom frame and charging port area.</p>
+        <p>There are also signs of moisture ingress indicators being activated, consistent with liquid exposure.</p>
+    </div>
+
+    <div class="section-title">Repair and or Replacement Recommendations:</div>
+        <div>
+            <p>Due to the combined impact and liquid damage, board-level repair is not considered economical compared with replacement.</p>
+        </div> <br>
+    <div class="section-content">
+        <div class="row"><span class="label">Replacement Value:</span> $ 9,999.00</div>
+        <div class="row"><span class="label">Insurance Assessment:</span> $ 1.00</div>
+        <div class="row"><span class="label">Total:</span> $ 10,000.00</div>
+        <p><i>All Prices Include GST, parts, labour, freight, testing.</i></p>
+    </div>
+</div>
+
+    <div class="footer">
+        Mac Ops is a leading Sales, Service and Repair business for Apple, Windows, computers, phones, drones and electronic devices.
+        With 2 locations across Queenstown and Wanaka we support the Southern Lakes region for smart device requirements.
+        <br>
+<div class="logo" style="display:flex; justify-content:center; width:100%;">
+  <img
+    src="https://mac-ops.co.nz/wp-content/uploads/2026/03/Screenshot-2026-03-27-at-4.58.35-PM.png"
+    alt="Mac Ops Logo"
+    style="display:block; margin:0 auto;"
+  >
+</div>
+
+        www.mac-ops.co.nz
+    </div>
+
+</div>
+
+</body>
+</html>
