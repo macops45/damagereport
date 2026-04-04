@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-04-03T21:37:38.967Z",
+  "sourcePdfCount": 8,
+  "extractedCount": 8,
+  "uniqueCount": 7,
+  "duplicateCount": 1,
+  "actionCounts": {
+    "write_off": 7,
+    "repair": 0,
+    "unknown": 0
+  },
+  "damageTypeCounts": {
+    "liquid": 2,
+    "physical": 4,
+    "board_or_power": 1
+  },
+  "topDevices": [
+    {
+      "deviceModel": "Apple iPhone 13 mobile phone",
+      "count": 1
+    },
+    {
+      "deviceModel": "Apple iPhone 15 Plus mobile phone",
+      "count": 1
+    },
+    {
+      "deviceModel": "Apple iPhone 16 Pro Mobile Phone",
+      "count": 1
+    },
+    {
+      "deviceModel": "DJI Mavic 3 Classic with Fly More Combo",
+      "count": 1
+    },
+    {
+      "deviceModel": "Apple Macbook Air M4 ( 2025)",
+      "count": 1
+    },
+    {
+      "deviceModel": "DJI Mavic 4 Pro with Fly More Combo",
+      "count": 1
+    },
+    {
+      "deviceModel": "Apple iPhone 15 Pro Mobile Phone",
+      "count": 1
+    }
+  ],
+  "files": [
+    {
+      "id": "reference-001",
+      "sourcePdf": "C5373809_-_Meaz_Nathan_-_Damage_report_Apple_iPhone_liquid_incursion_12.2.26[1193].pdf",
+      "assessmentNumber": "5287",
+      "claimNumber": "C5373809 AMI Claims",
+      "action": "write_off",
+      "damageType": "liquid"
+    },
+    {
+      "id": "reference-002",
+      "sourcePdf": "C5382720_-_Liam_Barclay_-_iPhone_15_Plus_Damage_Report[1805].pdf",
+      "assessmentNumber": "5357",
+      "claimNumber": "C5382720",
+      "action": "write_off",
+      "damageType": "physical"
+    },
+    {
+      "id": "reference-003",
+      "sourcePdf": "C90340186_-_Rebecca_Hutchinson_-_Apple_Iphone_Damage_report_18.12.25[1944].pdf",
+      "assessmentNumber": "4967",
+      "claimNumber": "C90340186 - Tower Insurance",
+      "action": "write_off",
+      "damageType": "physical"
+    },
+    {
+      "id": "reference-004",
+      "sourcePdf": "Isaac_Norton_Damage_Report_for_DJI_Mavic_3_Classic_More_Combo_ref_5541[2111].pdf",
+      "assessmentNumber": "5541",
+      "claimNumber": "TBA",
+      "action": "write_off",
+      "damageType": "board_or_power"
+    },
+    {
+      "id": "reference-005",
+      "sourcePdf": "Jospeh_Lupi_-_Insurance_report_for_Damaged_Apple_MacBook_Air_Laptop_REF_5464___9.3.26_[1919].pdf",
+      "assessmentNumber": "5464",
+      "claimNumber": "TBA",
+      "action": "write_off",
+      "damageType": "physical"
+    },
+    {
+      "id": "reference-006",
+      "sourcePdf": "Nic_Hawthorne_Damage_Report_for_DJI_Mavic_4_Pro_Fly_More_Combo[1999].pdf",
+      "assessmentNumber": "5483",
+      "claimNumber": "TBA",
+      "action": "write_off",
+      "damageType": "liquid"
+    },
+    {
+      "id": "reference-007",
+      "sourcePdf": "Oliver_Dowling_insurance_damage_report_-_Apple_iPhone_15_Pro_impact_Damage_Ref5049[701].pdf",
+      "assessmentNumber": "5049",
+      "claimNumber": "CL80045 - Rothbury Insurance",
+      "action": "write_off",
+      "damageType": "physical"
+    }
+  ]
+}

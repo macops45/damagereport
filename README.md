@@ -25,6 +25,35 @@ npm run dev
 
 Then open the local URL shown by Vite.
 
+## Firebase (company profile sync)
+
+The app can sync company profiles to Firestore.
+
+1. Copy `.env.example` to `.env`.
+2. Fill in your Firebase web app values.
+3. Enable **Authentication -> Sign-in method -> Email/Password** in Firebase console.
+4. Create at least one user in **Authentication -> Users**.
+5. Ensure Firestore is enabled in your Firebase project.
+
+If Firebase env vars are missing, the app automatically falls back to local storage mode.
+
+## Deploy on Vercel
+
+1. Push this repository to GitHub.
+2. In Vercel, create a new project from the repository.
+3. In project settings, add the same Firebase env vars from `.env.example`:
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+4. Deploy.
+
+After first deploy, add your Vercel domain (for example `your-app.vercel.app`) to Firebase:
+
+- `Authentication -> Settings -> Authorized domains`
+
 ## Build for production
 
 ```bash

@@ -10,6 +10,15 @@
   --accent: #0069ac;
   --accent-2: #0c71c3;
   --accent-soft: #e7f3fb;
+  --radius-sm: 9px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --space-sm: 8px;
+  --space-md: 14px;
+  --space-lg: 18px;
+  --shadow-soft: 0 8px 24px rgb(17 73 116 / 10%);
+  --shadow-elevated: 0 12px 24px rgb(11 68 115 / 22%);
   --font-ui: 'Roboto', 'Segoe UI', Tahoma, sans-serif;
   --font-head: 'Montserrat', 'Avenir Next', 'Trebuchet MS', sans-serif;
 }
@@ -29,9 +38,8 @@ body,
 body {
   font-family: var(--font-ui);
   color: var(--ink);
-  background: radial-gradient(circle at 4% 6%, #f3f8fd 0%, transparent 26%),
-    radial-gradient(circle at 96% 2%, #d9ebf8 0%, transparent 28%),
-    linear-gradient(160deg, #edf4fa 0%, #e8f1f8 50%, #e3edf7 100%);
+  background: radial-gradient(circle at 8% 6%, #f5f9fd 0%, transparent 30%),
+    linear-gradient(165deg, #eff5fb 0%, #e6eef8 100%);
 }
 
 button,
@@ -43,24 +51,69 @@ select {
 
 .app-shell {
   min-height: 100%;
-  padding: 18px;
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-md);
   animation: fade-up 260ms ease-out;
+}
+
+.auth-shell {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.auth-card {
+  width: min(460px, 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+  padding: var(--space-lg);
+}
+
+.auth-card h1 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 1.35rem;
+  color: #103c60;
+}
+
+.auth-card p {
+  margin: 8px 0 0;
+  color: #4f657b;
+}
+
+.auth-form {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.auth-error {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #a32525;
 }
 
 .topbar {
   border: 1px solid #0b5f9b;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #005f9d 0%, #0c71c3 58%, #1e8fd6 100%);
-  box-shadow: 0 12px 26px rgb(11 68 115 / 26%);
-  padding: 18px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #005c96 0%, #0b6fb8 58%, #1983ce 100%);
+  box-shadow: var(--shadow-elevated);
+  padding: var(--space-lg);
   display: flex;
   justify-content: space-between;
-  gap: 14px;
-  align-items: flex-end;
+  gap: var(--space-md);
+  align-items: flex-start;
   color: #fff;
+}
+
+.topbar-main {
+  min-width: 0;
+  max-width: 640px;
 }
 
 .topbar h1 {
@@ -76,11 +129,72 @@ select {
   color: rgb(255 255 255 / 86%);
 }
 
+.sync-status {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.sync-status-firebase {
+  color: rgb(210 241 255 / 95%);
+}
+
+.sync-status-local {
+  color: rgb(255 239 201 / 94%);
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.topbar-account {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 34%);
+  background: rgb(6 75 120 / 48%);
+}
+
+.topbar-account-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.42px;
+  color: rgb(225 243 255 / 90%);
+}
+
+.topbar-account-email {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #fff;
+}
+
 .topbar-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-end;
+  gap: var(--space-sm);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.topbar-actions > button {
+  min-height: 38px;
+  padding: 7px 11px;
+  border-radius: 9px;
+  font-size: 0.86rem;
+}
+
+.topbar-signout {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 0.82rem;
 }
 
 .select-company {
@@ -89,20 +203,25 @@ select {
 
 .select-company span {
   display: block;
-  font-size: 0.78rem;
-  margin-bottom: 4px;
+  font-size: 0.74rem;
+  margin-bottom: 3px;
+  font-weight: 600;
+  letter-spacing: 0.22px;
   color: rgb(255 255 255 / 90%);
 }
 
 .select-company select {
   width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 1px solid #b8cde2;
   background: #fff;
-  border-color: #b8cde2;
 }
 
 button {
   border: 1px solid #005f9d;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(180deg, #0073bc 0%, #0069ac 100%);
   color: #fff;
   cursor: pointer;
@@ -146,6 +265,11 @@ button:disabled {
   box-shadow: none;
 }
 
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(255 255 255 / 35%), 0 0 0 5px rgb(12 113 195 / 45%);
+}
+
 .workspace {
   flex: 1;
   min-height: 0;
@@ -158,9 +282,9 @@ button:disabled {
 .form-panel,
 .preview-panel {
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   background: var(--panel);
-  box-shadow: 0 8px 24px rgb(17 73 116 / 10%);
+  box-shadow: var(--shadow-soft);
   min-height: 0;
 }
 
@@ -178,9 +302,9 @@ button:disabled {
 
 .form-section {
   border: 1px solid #deebf6;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 12px;
-  background: linear-gradient(180deg, #fff 0%, #f9fcff 100%);
+  background: #fbfdff;
 }
 
 .form-section + .form-section {
@@ -218,7 +342,7 @@ textarea,
 select {
   width: 100%;
   border: 1px solid #c4d7ea;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   padding: 9px;
   background: #fff;
   color: #152434;
@@ -251,7 +375,7 @@ textarea {
 
 .logo-upload-card {
   border: 1px dashed #bcd2e6;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 10px;
   background: #f8fcff;
 }
@@ -326,7 +450,7 @@ textarea {
 
 .photo-thumb {
   border: 1px solid #d6e5f2;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: #fff;
   overflow: hidden;
   aspect-ratio: 1 / 1;
@@ -388,7 +512,7 @@ textarea {
   max-height: calc(100vh - 32px);
   background: #fff;
   border: 1px solid #d3e2ef;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 22px 48px rgb(0 25 49 / 28%);
   display: flex;
   flex-direction: column;
@@ -469,6 +593,20 @@ textarea {
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .topbar-main {
+    max-width: none;
+  }
+
+  .topbar-right {
+    width: 100%;
+    margin-left: 0;
+    align-items: flex-start;
+  }
+
+  .topbar-actions {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 640px) {
@@ -486,6 +624,18 @@ textarea {
 
   .app-shell {
     padding: 10px;
+  }
+
+  .topbar-account {
+    border-radius: 12px;
+  }
+
+  .topbar-signout {
+    width: auto;
+  }
+
+  .select-company {
+    min-width: 100%;
   }
 }
 

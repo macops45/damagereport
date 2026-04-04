@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { buildReportHtml } from './reportTemplate';
+import {
+  deleteCompanyFromFirebase,
+  fetchCompaniesFromFirebase,
+  isFirebaseCompaniesEnabled,
+  replaceDeletedCompanyWithFallbackInFirebase,
+  saveCompanyToFirebase,
+} from './companyRepository';
+import { firebaseAuth } from './firebase';
 
 const COMPANIES_STORAGE_KEY = 'damage-report-companies-v1';
 const SELECTED_COMPANY_STORAGE_KEY = 'damage-report-selected-company-v1';
@@ -11,7 +20,7 @@ const WATERMARK_LOGO_UPLOAD_MAX_HEIGHT = 1200;
 const FOOTER_LOGO_UPLOAD_MAX_WIDTH = 1800;
 const FOOTER_LOGO_UPLOAD_MAX_HEIGHT = 600;
 
-const DEFAULT_COMPANY = {
+const DEFAULT_MAC_OPS_COMPANY = {
   id: 'mac-ops',
   name: 'Mac Ops',
   headerLogoSrc: 'https://mac-ops.co.nz/wp-content/uploads/2015/12/Mac-ops-clear-logo-new.jpg',
@@ -25,6 +34,24 @@ const DEFAULT_COMPANY = {
     'Mac Ops is a leading Sales, Service and Repair business for Apple, Windows, computers, phones, drones and electronic devices.',
   website: 'www.mac-ops.co.nz',
 };
+
+const DEFAULT_TCP_COMPANY = {
+  id: 'tcp-computer-professors',
+  name: 'TCP (Computer Professors)',
+  headerLogoSrc: '/company-logos/tcp-header.png',
+  watermarkLogoSrc: '/company-logos/tcp-watermark.png',
+  footerLogoSrc: '',
+  addressLine1: 'Unit CG4/Frankton Road, Frankton',
+  addressLine2: 'Queenstown 9300',
+  phone: '0800 001 698',
+  email: 'queenstown@thecomputerprofessors.co.nz',
+  footerLine1:
+    'Mac Ops is a leading Sales, Service and Repair business for Apple, Windows, computers, phones, drones and electronic devices.',
+  website: 'https://thecomputerprofessors.co.nz',
+};
+
+const DEFAULT_COMPANIES = [DEFAULT_MAC_OPS_COMPANY, DEFAULT_TCP_COMPANY];
+const DEFAULT_COMPANY = DEFAULT_COMPANIES[0];
 
 const MONEY_FIELDS = new Set(['replacementValue', 'damageReportValue']);
 const NUMERIC_ONLY_FIELDS = new Set(['customerPhone', 'imei']);
@@ -241,25 +268,73 @@ function normalizeStoredCompany(company, index) {
   return normalized;
 }
 
+function normalizeCompanyList(companiesInput) {
+  const normalizedDefaults = DEFAULT_COMPANIES.map((company, index) => normalizeStoredCompany(company, index));
+
+  if (!Array.isArray(companiesInput) || !companiesInput.length) {
+    return normalizedDefaults;
+  }
+
+  const normalizedCompanies = companiesInput.map(normalizeStoredCompany);
+  const existingIds = new Set(normalizedCompanies.map((company) => company.id));
+  const missingDefaults = normalizedDefaults.filter((company) => !existingIds.has(company.id));
+
+  return [...normalizedCompanies, ...missingDefaults];
+}
+
+function sanitizeCompanyForPersistence(companyInput) {
+  return {
+    id: String(companyInput?.id ?? '').trim(),
+    name: String(companyInput?.name ?? '').trim(),
+    headerLogoSrc: String(companyInput?.headerLogoSrc ?? '').trim(),
+    watermarkLogoSrc: String(companyInput?.watermarkLogoSrc ?? '').trim(),
+    footerLogoSrc: String(companyInput?.footerLogoSrc ?? '').trim(),
+    addressLine1: String(companyInput?.addressLine1 ?? '').trim(),
+    addressLine2: String(companyInput?.addressLine2 ?? '').trim(),
+    phone: String(companyInput?.phone ?? '').trim(),
+    email: String(companyInput?.email ?? '').trim(),
+    footerLine1: String(companyInput?.footerLine1 ?? '').trim(),
+    website: String(companyInput?.website ?? '').trim(),
+  };
+}
+
+function mapFirebaseErrorToNotice(error, fallbackMessage) {
+  const code = String(error?.code ?? '').toLowerCase();
+
+  if (code.includes('permission-denied')) {
+    return 'Firebase denied access. Check Firestore rules for users/{uid}/companies and publish.';
+  }
+
+  if (code.includes('unauthenticated')) {
+    return 'Your session expired. Please sign in again.';
+  }
+
+  if (code.includes('failed-precondition')) {
+    return 'Firestore is not fully configured yet. Confirm Firestore Database is created.';
+  }
+
+  if (code.includes('unavailable') || code.includes('network-request-failed')) {
+    return 'Firebase is temporarily unavailable or offline. Check network and retry.';
+  }
+
+  return fallbackMessage;
+}
+
 function loadInitialCompanies() {
   if (typeof window === 'undefined') {
-    return [DEFAULT_COMPANY];
+    return normalizeCompanyList([]);
   }
 
   try {
     const raw = window.localStorage.getItem(COMPANIES_STORAGE_KEY);
     if (!raw) {
-      return [DEFAULT_COMPANY];
+      return normalizeCompanyList([]);
     }
 
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || !parsed.length) {
-      return [DEFAULT_COMPANY];
-    }
-
-    return parsed.map(normalizeStoredCompany);
+    return normalizeCompanyList(parsed);
   } catch (_error) {
-    return [DEFAULT_COMPANY];
+    return normalizeCompanyList([]);
   }
 }
 
@@ -274,7 +349,66 @@ function loadInitialSelectedCompanyId(companies) {
   return exists ? storedId : companies[0]?.id ?? DEFAULT_COMPANY.id;
 }
 
+function AuthenticationScreen({
+  email,
+  password,
+  errorMessage,
+  isSigningIn,
+  onEmailChange,
+  onPasswordChange,
+  onSubmit,
+}) {
+  return (
+    <div className="auth-shell">
+      <div className="auth-card">
+        <h1>Damage Report Generator</h1>
+        <p>Sign in to access company data and reports.</p>
+
+        <form onSubmit={onSubmit} className="auth-form">
+          <label>
+            E-mail
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => onEmailChange(event.target.value)}
+              placeholder="you@mercuryit.co.nz"
+              autoComplete="email"
+              required
+            />
+          </label>
+
+          <label>
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => onPasswordChange(event.target.value)}
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              required
+            />
+          </label>
+
+          {errorMessage ? <p className="auth-error">{errorMessage}</p> : null}
+
+          <button type="submit" disabled={isSigningIn}>
+            {isSigningIn ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function App() {
+  const firebaseCompaniesEnabled = isFirebaseCompaniesEnabled();
+  const [authUser, setAuthUser] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(firebaseCompaniesEnabled);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authErrorMessage, setAuthErrorMessage] = useState('');
+
   const [formData, setFormData] = useState(createInitialForm);
   const [companies, setCompanies] = useState(loadInitialCompanies);
   const [selectedCompanyId, setSelectedCompanyId] = useState(() => {
@@ -288,6 +422,10 @@ function App() {
   });
   const [companyNotice, setCompanyNotice] = useState('');
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [isCompanySyncLoading, setIsCompanySyncLoading] = useState(firebaseCompaniesEnabled);
+  const [companySyncNotice, setCompanySyncNotice] = useState(
+    firebaseCompaniesEnabled ? 'Sign in to sync companies with Firebase.' : 'Using local storage mode.',
+  );
 
   const selectedCompany = useMemo(() => {
     return companies.find((company) => company.id === selectedCompanyId) ?? companies[0] ?? DEFAULT_COMPANY;
@@ -296,6 +434,21 @@ function App() {
   const canGenerateReport = Boolean(selectedCompany?.name?.trim() && selectedCompany?.headerLogoSrc?.trim());
 
   const reportHtml = useMemo(() => buildReportHtml(formData, selectedCompany), [formData, selectedCompany]);
+
+  useEffect(() => {
+    if (!firebaseCompaniesEnabled || !firebaseAuth) {
+      setIsAuthLoading(false);
+      return undefined;
+    }
+
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      setAuthUser(user);
+      setIsAuthLoading(false);
+      setAuthErrorMessage('');
+    });
+
+    return () => unsubscribe();
+  }, [firebaseCompaniesEnabled]);
 
   useEffect(() => {
     if (!companies.some((company) => company.id === selectedCompanyId)) {
@@ -307,6 +460,72 @@ function App() {
     setCompanyForm(selectedCompany);
     setCompanyNotice('');
   }, [selectedCompany]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function syncCompaniesFromFirebase() {
+      if (!firebaseCompaniesEnabled) {
+        setIsCompanySyncLoading(false);
+        setCompanySyncNotice('Using local storage mode.');
+        return;
+      }
+
+      if (!authUser) {
+        setIsCompanySyncLoading(false);
+        setCompanySyncNotice('Sign in to sync companies with Firebase.');
+        return;
+      }
+
+      setIsCompanySyncLoading(true);
+
+      try {
+        const remoteCompanies = await fetchCompaniesFromFirebase(authUser.uid);
+        const remoteCompanyIds = new Set(
+          remoteCompanies.map((company) => String(company?.id ?? '').trim()).filter(Boolean),
+        );
+        const missingDefaultCompanies = DEFAULT_COMPANIES.filter((company) => !remoteCompanyIds.has(company.id)).map(
+          (company) => sanitizeCompanyForPersistence(company),
+        );
+
+        if (missingDefaultCompanies.length) {
+          await Promise.all(missingDefaultCompanies.map((company) => saveCompanyToFirebase(authUser.uid, company)));
+        }
+
+        const normalizedCompanies = normalizeCompanyList([...remoteCompanies, ...missingDefaultCompanies]);
+
+        if (isCancelled) {
+          return;
+        }
+
+        setCompanies(normalizedCompanies);
+        setSelectedCompanyId((currentSelectedId) => {
+          const exists = normalizedCompanies.some((company) => company.id === currentSelectedId);
+          return exists ? currentSelectedId : normalizedCompanies[0].id;
+        });
+        setCompanySyncNotice(`Companies synced with Firebase for ${authUser.email ?? 'current account'}.`);
+      } catch (error) {
+        if (isCancelled) {
+          return;
+        }
+
+        console.error('Firebase company sync failed:', error);
+        setCompanySyncNotice(
+          mapFirebaseErrorToNotice(error, 'Firebase sync failed. Continuing with local storage.'),
+        );
+      } finally {
+        if (!isCancelled) {
+          setIsCompanySyncLoading(false);
+        }
+      }
+    }
+
+    syncCompaniesFromFirebase();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [authUser, firebaseCompaniesEnabled]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -447,7 +666,7 @@ function App() {
     }));
   }
 
-  function deleteCurrentCompany() {
+  async function deleteCurrentCompany() {
     if (typeof window !== 'undefined') {
       const companyName = String(companyForm.name ?? '').trim() || 'this company';
       const confirmed = window.confirm(`Delete "${companyName}"? This action cannot be undone.`);
@@ -460,11 +679,50 @@ function App() {
     const targetCompanyId = companyForm.id;
     const remaining = companies.filter((company) => company.id !== targetCompanyId);
 
+    if (firebaseCompaniesEnabled) {
+      if (!authUser?.uid) {
+        setCompanyNotice('Sign in is required before deleting company records.');
+        return;
+      }
+
+      try {
+        if (remaining.length) {
+          await deleteCompanyFromFirebase(authUser.uid, targetCompanyId);
+        } else {
+          const fallbackForRemote = sanitizeCompanyForPersistence(
+            createCompanyProfile({
+              name: 'New Company',
+              footerLine1: 'Company footer line 1',
+              website: 'www.company-site.com',
+            }),
+          );
+
+          await replaceDeletedCompanyWithFallbackInFirebase(authUser.uid, targetCompanyId, fallbackForRemote);
+
+          setCompanies([fallbackForRemote]);
+          setSelectedCompanyId(fallbackForRemote.id);
+          setCompanyNotice('');
+          setIsCompanyModalOpen(false);
+          setCompanySyncNotice('Deleted company and created fallback profile in Firebase.');
+          return;
+        }
+      } catch (error) {
+        console.error('Firebase company delete failed:', error);
+        setCompanyNotice(
+          mapFirebaseErrorToNotice(error, 'Could not delete company in Firebase. Please check configuration.'),
+        );
+        return;
+      }
+    }
+
     if (remaining.length) {
       setCompanies(remaining);
       setSelectedCompanyId(remaining[0].id);
       setCompanyNotice('');
       setIsCompanyModalOpen(false);
+      setCompanySyncNotice(
+        firebaseCompaniesEnabled ? 'Company deleted from Firebase.' : 'Using local storage mode.',
+      );
       return;
     }
 
@@ -479,6 +737,7 @@ function App() {
 
     setCompanyNotice('');
     setIsCompanyModalOpen(false);
+    setCompanySyncNotice('Using local storage mode.');
   }
 
   function createCompany() {
@@ -495,20 +754,8 @@ function App() {
     setIsCompanyModalOpen(true);
   }
 
-  function saveCompany() {
-    const normalized = {
-      ...companyForm,
-      name: String(companyForm.name ?? '').trim(),
-      headerLogoSrc: String(companyForm.headerLogoSrc ?? '').trim(),
-      watermarkLogoSrc: String(companyForm.watermarkLogoSrc ?? '').trim(),
-      footerLogoSrc: String(companyForm.footerLogoSrc ?? '').trim(),
-      addressLine1: String(companyForm.addressLine1 ?? '').trim(),
-      addressLine2: String(companyForm.addressLine2 ?? '').trim(),
-      phone: String(companyForm.phone ?? '').trim(),
-      email: String(companyForm.email ?? '').trim(),
-      footerLine1: String(companyForm.footerLine1 ?? '').trim(),
-      website: String(companyForm.website ?? '').trim(),
-    };
+  async function saveCompany() {
+    const normalized = sanitizeCompanyForPersistence(companyForm);
 
     if (!normalized.name) {
       setCompanyNotice('Company name is required.');
@@ -520,11 +767,104 @@ function App() {
       return;
     }
 
+    if (firebaseCompaniesEnabled) {
+      if (!authUser?.uid) {
+        setCompanyNotice('Sign in is required before saving company records.');
+        return;
+      }
+
+      try {
+        await saveCompanyToFirebase(authUser.uid, normalized);
+      } catch (error) {
+        console.error('Firebase company save failed:', error);
+        setCompanyNotice(
+          mapFirebaseErrorToNotice(error, 'Could not save company in Firebase. Please check configuration.'),
+        );
+        return;
+      }
+    }
+
     setCompanies((current) =>
       current.map((company) => (company.id === normalized.id ? normalized : company)),
     );
+    setCompanySyncNotice(
+      firebaseCompaniesEnabled ? 'Company profile saved to Firebase.' : 'Using local storage mode.',
+    );
     setCompanyNotice('Company profile saved.');
     setIsCompanyModalOpen(false);
+  }
+
+  async function handleSignIn(event) {
+    event.preventDefault();
+
+    if (!firebaseAuth) {
+      setAuthErrorMessage('Firebase Auth is not configured.');
+      return;
+    }
+
+    const normalizedEmail = authEmail.trim();
+    if (!normalizedEmail || !authPassword) {
+      setAuthErrorMessage('E-mail and password are required.');
+      return;
+    }
+
+    setIsSigningIn(true);
+    setAuthErrorMessage('');
+
+    try {
+      await signInWithEmailAndPassword(firebaseAuth, normalizedEmail, authPassword);
+      setAuthPassword('');
+    } catch (error) {
+      const code = String(error?.code ?? '');
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        setAuthErrorMessage('Invalid e-mail or password.');
+      } else if (code === 'auth/too-many-requests') {
+        setAuthErrorMessage('Too many attempts. Please wait and try again.');
+      } else {
+        setAuthErrorMessage('Could not sign in. Please verify Firebase Auth configuration.');
+      }
+    } finally {
+      setIsSigningIn(false);
+    }
+  }
+
+  async function handleSignOut() {
+    if (!firebaseAuth) {
+      return;
+    }
+
+    try {
+      await signOut(firebaseAuth);
+      setCompanySyncNotice('Signed out. Sign in to sync companies with Firebase.');
+    } catch (_error) {
+      setCompanySyncNotice('Could not sign out at this time.');
+    }
+  }
+
+  function insertBeforeClosingBody(html, snippet) {
+    const closingBodyTagIndex = html.lastIndexOf('</body>');
+    if (closingBodyTagIndex === -1) {
+      return `${html}\n${snippet}`;
+    }
+
+    return `${html.slice(0, closingBodyTagIndex)}\n${snippet}\n${html.slice(closingBodyTagIndex)}`;
+  }
+
+  function addBaseHrefToReportHtml(html) {
+    if (typeof window === 'undefined') {
+      return html;
+    }
+
+    if (/<base\s/i.test(html)) {
+      return html;
+    }
+
+    const baseHref = `<base href="${window.location.origin}/">`;
+    if (/<head>/i.test(html)) {
+      return html.replace(/<head>/i, `<head>\n${baseHref}`);
+    }
+
+    return `${baseHref}\n${html}`;
   }
 
   function openReportInNewTab() {
@@ -534,13 +874,17 @@ function App() {
       return;
     }
 
-    const blob = new Blob([reportHtml], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank', 'noopener,noreferrer');
+    const reportWindow = window.open('', '_blank');
+    if (!reportWindow) {
+      setCompanyNotice('Could not open the report tab. Please allow pop-ups for this site.');
+      return;
+    }
 
-    window.setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 10000);
+    const htmlWithBaseHref = addBaseHrefToReportHtml(reportHtml);
+    reportWindow.document.open();
+    reportWindow.document.write(htmlWithBaseHref);
+    reportWindow.document.close();
+    setCompanyNotice('');
   }
 
   function downloadReportHtml() {
@@ -570,90 +914,111 @@ function App() {
       return;
     }
 
-    const iframe = document.createElement('iframe');
-    iframe.setAttribute('aria-hidden', 'true');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    iframe.style.visibility = 'hidden';
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      setCompanyNotice('Could not open the print window. Please allow pop-ups for this site.');
+      return;
+    }
 
-    const cleanup = () => {
-      window.setTimeout(() => {
-        if (iframe.parentNode) {
-          iframe.parentNode.removeChild(iframe);
-        }
-      }, 300);
-    };
+    const htmlWithBaseHref = addBaseHrefToReportHtml(reportHtml);
+    const autoPrintScript = `<script>
+window.addEventListener('load', function () {
+  window.setTimeout(function () {
+    window.focus();
+    window.print();
+  }, 350);
+});
+window.addEventListener('afterprint', function () {
+  window.close();
+});
+</script>`;
+    const printableHtml = insertBeforeClosingBody(htmlWithBaseHref, autoPrintScript);
 
-    iframe.onload = () => {
-      const frameWindow = iframe.contentWindow;
-      if (!frameWindow) {
-        cleanup();
-        return;
-      }
-
-      try {
-        frameWindow.addEventListener('afterprint', cleanup, { once: true });
-      } catch (_error) {
-        // ignore and rely on timeout cleanup below
-      }
-
-      window.setTimeout(() => {
-        frameWindow.focus();
-        frameWindow.print();
-        window.setTimeout(cleanup, 3000);
-      }, 400);
-    };
-
-    iframe.srcdoc = reportHtml;
-    document.body.appendChild(iframe);
+    printWindow.document.open();
+    printWindow.document.write(printableHtml);
+    printWindow.document.close();
+    setCompanyNotice('');
   }
 
   function resetForm() {
     setFormData(createInitialForm());
   }
 
+  if (firebaseCompaniesEnabled && isAuthLoading) {
+    return (
+      <div className="auth-shell">
+        <div className="auth-card">
+          <h1>Damage Report Generator</h1>
+          <p>Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (firebaseCompaniesEnabled && !authUser) {
+    return (
+      <AuthenticationScreen
+        email={authEmail}
+        password={authPassword}
+        errorMessage={authErrorMessage}
+        isSigningIn={isSigningIn}
+        onEmailChange={setAuthEmail}
+        onPasswordChange={setAuthPassword}
+        onSubmit={handleSignIn}
+      />
+    );
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div>
+        <div className="topbar-main">
           <h1>Damage Report Generator</h1>
-          <p>Fill in the fields and generate a complete report in HTML using your template model.</p>
+          <p>Fill in the fields and generate a Damage Report using the current template.</p>
+          <p className={`sync-status ${firebaseCompaniesEnabled ? 'sync-status-firebase' : 'sync-status-local'}`}>
+            {isCompanySyncLoading ? 'Syncing companies...' : companySyncNotice}
+          </p>
         </div>
 
-        <div className="topbar-actions">
-          <label className="select-company">
-            <span>Select company</span>
-            <select value={selectedCompanyId} onChange={(event) => setSelectedCompanyId(event.target.value)}>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name || 'Unnamed company'}
-                </option>
-              ))}
-            </select>
-          </label>
+        <div className="topbar-right">
+          {firebaseCompaniesEnabled && authUser ? (
+            <div className="topbar-account">
+              <span className="topbar-account-label">Signed in as</span>
+              <span className="topbar-account-email">{authUser.email ?? authUser.uid}</span>
+              <button type="button" className="secondary topbar-signout" onClick={handleSignOut}>
+                Sign Out
+              </button>
+            </div>
+          ) : null}
 
-          <button type="button" onClick={createCompany}>
-            Create Company
-          </button>
-          <button type="button" onClick={() => setIsCompanyModalOpen(true)}>
-            Edit Company
-          </button>
-          <button type="button" onClick={openReportInNewTab} disabled={!canGenerateReport}>
-            Open Report
-          </button>
-          <button type="button" onClick={downloadReportHtml} disabled={!canGenerateReport}>
-            Download HTML
-          </button>
-          <button type="button" onClick={exportReportPdf} disabled={!canGenerateReport}>
-            Export PDF
-          </button>
-          <button type="button" className="secondary" onClick={resetForm}>
-            Reset Form
-          </button>
+          <div className="topbar-actions">
+            <label className="select-company">
+              <span>Select company template</span>
+              <select value={selectedCompanyId} onChange={(event) => setSelectedCompanyId(event.target.value)}>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name || 'Unnamed company'}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <button type="button" onClick={createCompany}>
+              Create Company
+            </button>
+            <button type="button" onClick={() => setIsCompanyModalOpen(true)}>
+              Edit Company
+            </button>
+            <button type="button" onClick={openReportInNewTab} disabled={!canGenerateReport}>
+              Open Report
+            </button>
+            <button type="button" onClick={exportReportPdf} disabled={!canGenerateReport}>
+              Export PDF
+            </button>
+            <button type="button" className="secondary" onClick={resetForm}>
+              Reset Form
+            </button>
+          </div>
         </div>
       </header>
 
@@ -665,7 +1030,7 @@ function App() {
             <h3>Assessment</h3>
             <div className="field-grid two-col">
               <label>
-                Assessment Number
+                Ticket Number
                 <input name="assessmentNumber" value={formData.assessmentNumber} onChange={updateField} />
               </label>
               <label>
@@ -725,7 +1090,7 @@ function App() {
                 <input name="storage" value={formData.storage} onChange={updateField} />
               </label>
               <label>
-                Serial Number (auto uppercase)
+                Serial Number
                 <input name="serialNumber" value={formData.serialNumber} onChange={updateField} />
               </label>
               <label>

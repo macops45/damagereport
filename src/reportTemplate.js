@@ -156,8 +156,8 @@ export function buildReportHtml(data, companyInput) {
   }
 
   .page {
-    width: 794px;
-    min-height: 1123px;
+    width: 210mm;
+    min-height: 297mm;
     margin: 0 auto 20px;
     background: #ffffff;
     padding: 60px 70px;
@@ -356,14 +356,20 @@ export function buildReportHtml(data, companyInput) {
     }
 
     .page {
-      margin: 0 auto;
-      page-break-after: always;
+      width: auto;
+      min-height: 0;
+      height: auto;
+      margin: 0;
       break-after: page;
+      page-break-after: always;
+      page-break-inside: auto;
+      break-inside: auto;
+      overflow: visible;
     }
 
     .page:last-child {
-      page-break-after: auto;
       break-after: auto;
+      page-break-after: auto;
     }
   }
 </style>

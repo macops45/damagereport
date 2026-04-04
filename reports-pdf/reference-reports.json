@@ -1,0 +1,144 @@
+[
+  {
+    "id": "reference-001",
+    "deviceModel": "Apple iPhone 13 mobile phone",
+    "deviceIssue": "The Apple Iphone 13 mobile was presented to us after an impact and liquid\nincursion incident.\nThe phone is not staying on and reboots for the customer then shuts down.\nThe device is unusable for the user in its current condition.\nFurther inspection needed.",
+    "diagnosisIssues": "We completed a damage inspection to the device.\nPower meter readings show irregular values and random restarts, indicating that the\nmainboard power management controller (SMC) is faulty, leading to power failures\ncaused by liquid damage impact. Critical mainboard fault on phone.",
+    "repairRecommendation": "REPLACEMENT RECOMMENDED:\nBased on the extensive damage from the liquid damage to the device including the\nprimary mainboard, this iPhone 13 is considered Beyond Economical Repair.",
+    "replacementValue": "$ 1,699.00",
+    "damageReportValue": "$ 139.00",
+    "meta": {
+      "sourcePdf": "C5373809_-_Meaz_Nathan_-_Damage_report_Apple_iPhone_liquid_incursion_12.2.26[1193].pdf",
+      "assessmentNumber": "5287",
+      "claimNumber": "C5373809 AMI Claims",
+      "customerName": "Meaz Nathan",
+      "replacementOptions": [
+        "$ 1,699.00"
+      ],
+      "action": "write_off",
+      "damageType": "liquid"
+    }
+  },
+  {
+    "id": "reference-002",
+    "deviceModel": "Apple iPhone 15 Plus mobile phone",
+    "deviceIssue": "The Apple iPhone was presented to us after an impact damage incident.\nThe back glass is shattered and the phone is restarting every few minutes.\nFurther inspection needed.",
+    "diagnosisIssues": "After inspection on the phone we can determine the mainboard has suffered a serious\nfault due the impact damage, forcing the phone to restart every two to three minutes.\nWhile on power, used mainboard readings which give us unstable power readings and\nvoltage going to 0.00 when phone restarts.",
+    "repairRecommendation": "REPLACEMENT RECOMMENDED:\nBased on the extent of the damage which affects not only the back glass but also the\nmainboard, this iPhone is considered Beyond Economical Repair.\nAny repair attempt would be unlikely to restore the device to the reliability or\nperformance standards expected under manufacturer specifications.",
+    "replacementValue": "$ 1,699.00",
+    "damageReportValue": "$ 139.00",
+    "meta": {
+      "sourcePdf": "C5382720_-_Liam_Barclay_-_iPhone_15_Plus_Damage_Report[1805].pdf",
+      "assessmentNumber": "5357",
+      "claimNumber": "C5382720",
+      "customerName": "Liam Barclay",
+      "replacementOptions": [
+        "$ 1,699.00"
+      ],
+      "action": "write_off",
+      "damageType": "physical"
+    }
+  },
+  {
+    "id": "reference-003",
+    "deviceModel": "Apple iPhone 16 Pro Mobile Phone",
+    "deviceIssue": "The Apple Iphone 16 Pro mobile was presented to us after an impact damage\nincident. Car Crash incident.\nThe phone has incurred significant physical damage with cracks in the rear of the\nphone and the frame is bent.\nThe device is unusable for the user in its current condition.\nFurther inspection needed.",
+    "diagnosisIssues": "Physical damage to phone that is not repairable / replaceable\nPower meter readings show irregular values and random restarts, indicating that the\nmainboard power management controller (SMC) is faulty, leading to power failures\ncaused by impact.",
+    "repairRecommendation": "REPLACEMENT RECOMMENDED:\nBased on the extensive damage to the device including the primary mainboard, this\niPhone Pro is considered Beyond Economical Repair.",
+    "replacementValue": "$ 2,349.00",
+    "damageReportValue": "$ 139.00",
+    "meta": {
+      "sourcePdf": "C90340186_-_Rebecca_Hutchinson_-_Apple_Iphone_Damage_report_18.12.25[1944].pdf",
+      "assessmentNumber": "4967",
+      "claimNumber": "C90340186 - Tower Insurance",
+      "customerName": "Rebecca Hutchinson",
+      "replacementOptions": [
+        "$ 2,349.00"
+      ],
+      "action": "write_off",
+      "damageType": "physical"
+    }
+  },
+  {
+    "id": "reference-004",
+    "deviceModel": "DJI Mavic 3 Classic with Fly More Combo",
+    "deviceIssue": "The DJI Mavic 3 Classic drone was presented to us after a crash with a broken motor\narm.\nThe drone is not usable based on the current condition.",
+    "diagnosisIssues": "MAINBOARD DAMAGED DEVICE\nUpon inspection, the motor controllers (ESC Board) has failed to perform in\nsome of our tests indicating erratic signals which lead to a motor speed\nfailure/unprecise rotation.\nDrone self check shows errors as motor idle or drifting. Trying to fly this drone\nmight pose a risk of failure during flight causing the drone to collapse and fall\nfrom the sky.",
+    "repairRecommendation": "BEYOND ECONOMIC REPAIR: Replacement device recommended\nBased on the damage found not only at the arm but also on the mainboard controllers\nany attempt of repairing this drone is a potential risk (failing while flying), repair this\ndrone is not recommended and won't guarantee reliability performance as expected by\nmanufacturer specifications.",
+    "replacementValue": "$ 3,899.00",
+    "damageReportValue": "$ 139.00",
+    "meta": {
+      "sourcePdf": "Isaac_Norton_Damage_Report_for_DJI_Mavic_3_Classic_More_Combo_ref_5541[2111].pdf",
+      "assessmentNumber": "5541",
+      "claimNumber": "TBA",
+      "customerName": "Isaac Norton",
+      "replacementOptions": [
+        "$ 3,899.00",
+        "$ 4,675.00"
+      ],
+      "action": "write_off",
+      "damageType": "board_or_power"
+    }
+  },
+  {
+    "id": "reference-005",
+    "deviceModel": "Apple Macbook Air M4 ( 2025)",
+    "deviceIssue": "The Apple Macbook Air was presented to us after an impact damage incident.\nThe front LCD is shattered and the computer is unusable to the customer.\nFurther inspection needed.",
+    "diagnosisIssues": "After inspecting the MacBook, we determined that the mainboard has sustained\ndamage due to impact. The mainboard overheats and the fan runs at maximum speed.\nDuring our tests, the macbook showed unstable readings and restarted during tests due\nto overheating.",
+    "repairRecommendation": "REPLACEMENT RECOMMENDED:\nBased on the damage to the LCD screen and the mainboard’s failure preventing the\ncomputer from staying on, this MacBook is considered Beyond Economical Repair.\nAny repair attempt would be unlikely to restore the device to the reliability or\nperformance standards expected under manufacturer specifications.",
+    "replacementValue": "$ 1,999.00",
+    "damageReportValue": "$ 139.00",
+    "meta": {
+      "sourcePdf": "Jospeh_Lupi_-_Insurance_report_for_Damaged_Apple_MacBook_Air_Laptop_REF_5464___9.3.26_[1919].pdf",
+      "assessmentNumber": "5464",
+      "claimNumber": "TBA",
+      "customerName": "Joseph Lupi",
+      "replacementOptions": [
+        "$ 1,999.00"
+      ],
+      "action": "write_off",
+      "damageType": "physical"
+    }
+  },
+  {
+    "id": "reference-006",
+    "deviceModel": "DJI Mavic 4 Pro with Fly More Combo",
+    "deviceIssue": "The DJI Mavic 4 Pro drone was presented to us after liquid exposure.\nThe drone landed in the water and now multiple error messages are showing\nup.\nThe drone is not usable for the user and due health and safety, liquid damage\ndrones are not repairable due potential risk of faulting during flight.",
+    "diagnosisIssues": "LIQUID DAMAGED DEVICE\nUpon inspection, it was found that the liquid indicator had turned red at the\nmainboard controllers. Indicating crucial components have been exposed to\nliquid.",
+    "repairRecommendation": "BEYOND ECONOMIC REPAIR: Replacement device recommended\nDue to the nature of the damage and the potential risk (failing while flying), any\nattempts of repair on the drone is not recommended and won't guarantee reliability\nperformance as expected by manufacturer specifications.",
+    "replacementValue": "$ 3,899.00",
+    "damageReportValue": "$ 139.00",
+    "meta": {
+      "sourcePdf": "Nic_Hawthorne_Damage_Report_for_DJI_Mavic_4_Pro_Fly_More_Combo[1999].pdf",
+      "assessmentNumber": "5483",
+      "claimNumber": "TBA",
+      "customerName": "Nic Hawthorne",
+      "replacementOptions": [
+        "$ 3,899.00",
+        "$ 4,989.00"
+      ],
+      "action": "write_off",
+      "damageType": "liquid"
+    }
+  },
+  {
+    "id": "reference-007",
+    "deviceModel": "Apple iPhone 15 Pro Mobile Phone",
+    "deviceIssue": "The Apple Iphone 15 Pro mobile was presented to us after an impact damage\nincident.\nDamaged rear frame of phone and it is shutting down for the user and rebooting.\nThe device is unusable for the user in its current condition.\nFurther inspection needed.",
+    "diagnosisIssues": "Physical damage to rear frame from impact.\nPower meter readings show irregular values and random restarts, indicating that the\nmainboard power management controller (SMC) is faulty, leading to power failures\ncaused by impact. Mainboard fault.",
+    "repairRecommendation": "REPLACEMENT RECOMMENDED:\nBased on the extensive damage to the device including the primary mainboard, this\niPhone Pro is considered Beyond Economical Repair.",
+    "replacementValue": "$ 2,349.00",
+    "damageReportValue": "$ 139.00",
+    "meta": {
+      "sourcePdf": "Oliver_Dowling_insurance_damage_report_-_Apple_iPhone_15_Pro_impact_Damage_Ref5049[701].pdf",
+      "assessmentNumber": "5049",
+      "claimNumber": "CL80045 - Rothbury Insurance",
+      "customerName": "Oliver Dowling",
+      "replacementOptions": [
+        "$ 2,349.00"
+      ],
+      "action": "write_off",
+      "damageType": "physical"
+    }
+  }
+]
